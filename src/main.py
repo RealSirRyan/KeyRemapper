@@ -14,8 +14,8 @@ def load_config():
         print('Config file created. Please edit the config file and restart.')
         shutil.copy('src/default_config.yaml', 'config.yaml')
         
-        #Fixing ownership (linux)
-        if os.geteuid() == 0: #0 corresponds to root
+        #Fixing ownership of config.yaml (linux)
+        if os.name == 'posix' and os.geteuid() == 0: #0 corresponds to root
             uid = int(os.environ.get('SUDO_UID'))#Environment variable for the user who ran sudo
             gid = int(os.environ.get('SUDO_GID'))
 
