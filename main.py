@@ -1,30 +1,33 @@
 import keyboard
 import yaml
 import os
-import shutil
 import sys
 
 
-#Returns the config data
+default_config = {
+    'output_key_presses': True,
+
+    'remaps': {
+        'a': 'b',
+        'b': 'c',
+        'right shift': 'h'
+    }
+}
+
+
+# Return the config data
 def load_config():
     
-    #Checking if a config file exists
+    # Check if config file exists
     if not os.path.isfile('config.yaml'):
-        #Creating a config file
-        print('Config file created. Please edit the config file and restart.')
-        shutil.copy('src/default_config.yaml', 'config.yaml')
-        
-        #Fixing ownership of config.yaml (linux)
-        if os.name == 'posix' and os.geteuid() == 0: #0 corresponds to root
-            uid = int(os.environ.get('SUDO_UID'))#Environment variable for the user who ran sudo
-            gid = int(os.environ.get('SUDO_GID'))
-
-            os.chown('./config.yaml', uid, gid)
-        
+        # Create config file
+        print('Config file created: Please edit the config file and restart the program.')
+        with open('config.yaml', 'w') as file:
+            yaml.safe_dump(default_config, file, default_flow_style=False)
         sys.exit()
     
 
-    #Loading the config file
+    # Load config file
     with open('config.yaml', 'r') as file:
         try:
             data = yaml.safe_load(file)
@@ -33,8 +36,7 @@ def load_config():
             print(exc)
 
 
-
-#Outputs names of pressed keys
+# Output names of pressed keys
 def print_key_presses():
     while True:
         event = keyboard.read_event()
@@ -42,27 +44,25 @@ def print_key_presses():
             print(f'"{event.name}" pressed!')
 
 
-
-#Remaps keys
+# Remap keys
 def remap_keys(remaps):
     for old_key, new_key in remaps.items():
         keyboard.remap_key(old_key, new_key)
 
 
-
 def main():
     config = load_config()
 
-    #Remapping Keys
+    # Remap keys
     remap_keys(config['remaps'])
 
-    #Printing keypresses
+    # Print key presses
     if config['output_key_presses'] == True:
         print_key_presses()
     else:
-        #Stop the script from exiting
+        # Stop the script from exiting
         keyboard.wait()
 
 
-
-main()
+if __name__ == "__main__":
+    main()

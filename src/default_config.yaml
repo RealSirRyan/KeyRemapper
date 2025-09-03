@@ -1,6 +1,0 @@
-#Weather the names of keys are printed when they are pressed.
-output_key_presses: true
-
-remaps:
-  a: b
-  c: d
